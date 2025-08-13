@@ -2,7 +2,7 @@
 # Model and data path
 MODEL_PATH: 'weights/best.pt'
 VIDEO_SOURCE_1: 'video data/box.mp4'
-VIDEO_SOURCE_2: 'F:/CV Projects/Factory Production Line/Factory-Production-Line-Monitoring-System/video data/pac.mp4'
+VIDEO_SOURCE_2: 'video data/pac.mp4'
 
 # Frame processing
 SKIP_FRAMES_FOR_TRACKER_1: 2
