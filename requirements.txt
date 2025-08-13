@@ -1,6 +1,6 @@
 pandas
 numpy
-opencv-python-headless==4.8.0.74
+streamlit
+opencv-python-headless
 ultralytics
 pyyaml
-streamlit
