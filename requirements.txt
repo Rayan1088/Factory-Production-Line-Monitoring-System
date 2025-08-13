@@ -1,4 +1,5 @@
-ultralytics
+ultralytics==8.0.196
+lap==0.5.12
 pandas
 numpy
 streamlit
