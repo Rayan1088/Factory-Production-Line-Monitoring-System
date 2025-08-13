@@ -1,6 +1,6 @@
+ultralytics
 pandas
 numpy
 streamlit
 opencv-python-headless
-ultralytics
 pyyaml
