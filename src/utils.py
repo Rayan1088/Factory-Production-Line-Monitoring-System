@@ -2,7 +2,9 @@ import cv2
 import sys
 import yaml
 import time
+import torch
 from ultralytics import YOLO
+from ultralytics.nn.tasks import DetectionModel
 from collections import deque
 from src.exception import CustomException
 from src.logger import logging
@@ -21,6 +23,8 @@ def load_config(config_path):
 
 def load_yolo_model(model_path):
     try:
+        # Add safe globals before loading
+        torch.serialization.add_safe_globals([DetectionModel])
         model = YOLO(model_path)
         logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
         
