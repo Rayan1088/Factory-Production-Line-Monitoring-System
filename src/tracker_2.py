@@ -9,7 +9,6 @@ from src.logger import logging
 from src.databaseManager import DataBaseManagerClass
 from src.utils import *
 
-# Create a logger instance
 logger = logging.getLogger("tracker_2") 
 
 class TrackerClass2:
@@ -63,7 +62,7 @@ class TrackerClass2:
         # Initialize time and database 
         self.last_save_time = time.time()
         try:
-            self.db_manager = DataBaseManagerClass(self.config['DB_PATH_1'], self.config['DB_PATH_2'], self.config['LIMIT'])
+            self.db_manager = DataBaseManagerClass(self.config['DB_PATH'], self.config['LIMIT'])
             self.status['database_ready'] = True
         except Exception as e:
             logger.error(f"Error Initializing Database Manager From [TrackerClass2]: {e}")
@@ -472,7 +471,6 @@ class TrackerClass2:
             
         logger.info("Cleanup Completed Successfully From [TrackerClass2]")
         
-    # process The Video Frame By Frame For Object Detection And Tracking
     def detection_and_tracking_2_for_local_system(self):
         current_frame_ids = set()
         cleanup_performed = False
@@ -616,7 +614,6 @@ class TrackerClass2:
                 progress_per = (self.current_frame_number / self.total_frames) * 100
                 logger.info(f"Progress [{progress_per:.1f}] - Frame [{self.current_frame_number} / {self.total_frames}] - Processed" 
                             f"[{self.frames_processed_count}] frames - Tracked Objects [{len(self.dictionary)}] From [TrackerClass1].")
-
             return frame, False
         
         except Exception as e:
