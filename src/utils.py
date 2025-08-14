@@ -21,7 +21,7 @@ def load_config(config_path):
         logger.error(f"Error Occurred During Loading Configuration File: {e}")
         raise CustomException(e, sys)
 
-def load_yolo_model(model_path):
+'''def load_yolo_model(model_path):
     try:
         model = YOLO(model_path)
         logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
@@ -37,7 +37,113 @@ def load_yolo_model(model_path):
     
     except Exception as e:
         logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
-        raise CustomException(e, sys)
+        raise CustomException(e, sys)'''
+
+
+def load_yolo_model(model_path):
+    try:
+        # SOLUTION: Set torch serialization to allow unsafe loading
+        # This is needed for PyTorch 2.6+ compatibility with YOLO models
+        original_weights_only = torch.serialization.get_default_load_endianness()
+        
+        # Temporarily disable weights_only for YOLO model loading
+        torch.serialization.add_safe_globals([
+            torch.nn.modules.container.Sequential,
+            torch.nn.modules.conv.Conv2d,
+            torch.nn.modules.batchnorm.BatchNorm2d,
+            torch.nn.modules.activation.ReLU,
+            torch.nn.modules.activation.SiLU,
+            torch.nn.modules.pooling.MaxPool2d,
+            torch.nn.modules.pooling.AdaptiveAvgPool2d,
+            torch.nn.modules.linear.Linear,
+            torch.nn.modules.dropout.Dropout,
+        ])
+        
+        # Alternative approach: Monkey patch torch.load temporarily
+        original_torch_load = torch.load
+        
+        def patched_torch_load(*args, **kwargs):
+            # Force weights_only=False for YOLO model loading
+            kwargs['weights_only'] = False
+            return original_torch_load(*args, **kwargs)
+        
+        # Temporarily replace torch.load
+        torch.load = patched_torch_load
+        
+        try:
+            # Now load the YOLO model - this should work without the weights_only error
+            model = YOLO(model_path)
+            logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
+            
+            # For custom models to see the class names
+            names = model.names
+            logger.info(f"Fine Tuned Model Has [{len(names)}] Classes.")
+            logger.info(f"Custom Class Names:")
+            for index, name in names.items():
+                logger.info(f"Class [{index}]: [{name}]")
+                
+            return model, names
+            
+        finally:
+            # Always restore the original torch.load function
+            torch.load = original_torch_load
+    
+    except Exception as e:
+        logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
+        
+        # Try alternative approach if the first one fails
+        try:
+            logger.info("Trying alternative loading method...")
+            
+            # Method 2: Use context manager for safe globals
+            with torch.serialization.safe_globals([
+                torch.nn.modules.container.Sequential,
+                torch.nn.modules.conv.Conv2d,
+                torch.nn.modules.batchnorm.BatchNorm2d,
+                torch.nn.modules.activation.ReLU,
+                torch.nn.modules.activation.SiLU,
+                torch.nn.modules.pooling.MaxPool2d,
+                torch.nn.modules.pooling.AdaptiveAvgPool2d,
+                torch.nn.modules.linear.Linear,
+                torch.nn.modules.dropout.Dropout,
+            ]):
+                model = YOLO(model_path)
+                names = model.names
+                logger.info(f"Model Loaded Successfully Using Alternative Method From, [{model_path}] Path.")
+                return model, names
+                
+        except Exception as e2:
+            logger.error(f"Alternative loading method also failed: {e2}")
+            
+            # Method 3: Final fallback - load with explicit weights_only=False
+            try:
+                logger.info("Trying final fallback method...")
+                
+                # Monkey patch at module level
+                import ultralytics.nn.tasks
+                original_load = torch.load
+                
+                def safe_load(*args, **kwargs):
+                    kwargs.pop('weights_only', None)  # Remove if present
+                    kwargs['weights_only'] = False
+                    return original_load(*args, **kwargs)
+                
+                torch.load = safe_load
+                ultralytics.nn.tasks.torch.load = safe_load
+                
+                model = YOLO(model_path)
+                names = model.names
+                
+                # Restore original
+                torch.load = original_load
+                ultralytics.nn.tasks.torch.load = original_load
+                
+                logger.info(f"Model Loaded Successfully Using Final Fallback From, [{model_path}] Path.")
+                return model, names
+                
+            except Exception as e3:
+                logger.error(f"All loading methods failed: {e3}")
+                raise CustomException(e, sys)
 
 def capture_video_get_properties(video_path):
     try:
