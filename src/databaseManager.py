@@ -4,7 +4,6 @@ import os
 from src.exception import CustomException
 from src.logger import logging
 
-# Create a logger instance
 logger = logging.getLogger("database") 
 
 class DataBaseManagerClass:
@@ -37,8 +36,7 @@ class DataBaseManagerClass:
         except Exception as e:
             logger.error(f"Error Occurred During Create Database: {e}")
             raise CustomException(e, sys)        
-    
-    # Initialize The Database And Create Tables If They Dont Exist    
+       
     def init_dbs(self):
         try:
             # Initialize 1st Database And Create Tables
@@ -89,7 +87,6 @@ class DataBaseManagerClass:
             logger.error(f"Error Occurred During Initializing Database [{self.db_path_1}] And [{self.db_path_2}]: {e}")
             raise CustomException(e, sys)
     
-    # Save Counts To Database "tracking_box_data.db" With Current Data
     def save_box_counts(self, in_count, out_count):
         try:
             connection = sqlite3.connect(self.db_path_1)
@@ -107,7 +104,6 @@ class DataBaseManagerClass:
             logger.error(f"Error Occurred During Saving Data To Database [{self.db_path_1}]: {e}")
             raise CustomException(e, sys)    
         
-    # Save Counts To Database "tracking_cement_bags_data.db" With Current Data
     def save_cement_bag_counts(self, out_count):
         try:
             connection = sqlite3.connect(self.db_path_2)
@@ -124,8 +120,7 @@ class DataBaseManagerClass:
         except Exception as e:
             logger.error(f"Error Occurred During Saving Data To Database [{self.db_path_2}]: {e}")
             raise CustomException(e, sys)  
-
-    # Retrieve Recent Tracking Records For Database [db_path_1]
+            
     def get_recent_counts_for_boxs(self):
         try:
             connection = sqlite3.connect(self.db_path_1)
@@ -144,7 +139,6 @@ class DataBaseManagerClass:
             logger.error(f"Error Occurred During Retrieve Recent Tracking Records From Database [{self.db_path_1}]: {e}")
             raise CustomException(e, sys)
         
-    # Retrieve Recent Tracking Records For Database [db_path_2]
     def get_recent_counts_for_cement_bags(self):
         try:
             connection = sqlite3.connect(self.db_path_2)
@@ -163,7 +157,6 @@ class DataBaseManagerClass:
             logger.error(f"Error Occurred During Retrieve Recent Tracking Records From Database [{self.db_path_2}]: {e}")
             raise CustomException(e, sys)
     
-    # Database Query Functions
     def view_database_records(self):
         try:
             # For Boxs
