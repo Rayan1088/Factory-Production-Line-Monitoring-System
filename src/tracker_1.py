@@ -64,7 +64,7 @@ class TrackerClass1:
         # Initialize time and database 
         self.last_save_time = time.time() 
         try:
-            self.db_manager = DataBaseManagerClass(self.config['DB_PATH_1'], self.config['DB_PATH_2'], self.config['LIMIT'])
+            self.db_manager = DataBaseManagerClass(self.config['DB_PATH'], self.config['LIMIT'])
             self.status['database_ready'] = True
         except Exception as e:
             logger.error(f"Error Initializing Database Manager From [TrackerClass1]: {e}")
@@ -514,7 +514,6 @@ class TrackerClass1:
             
         logger.info("Cleanup Completed Successfully From [TrackerClass1]")
         
-    # process The Video Frame By Frame For Object Detection And Tracking
     def detection_and_tracking_1_for_local_system(self):
         current_frame_ids = set()
         cleanup_performed = False
