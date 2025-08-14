@@ -48,7 +48,7 @@ def load_yolo_model(model_path):
         # Allowlist necessary YOLO globals
         add_safe_globals([DetectionModel, nn.Sequential])
 
-        model = YOLO(model_path)  # Will now load safely
+        model = torch.load(model_path, weights_only=False)
         logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
 
         # For custom models to see the class names
