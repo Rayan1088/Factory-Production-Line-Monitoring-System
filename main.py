@@ -21,7 +21,7 @@ class MultiprocessingForTrackers:
     def task_1(self):
         try:
             logger.info("Task 1 Starting.")
-            db = DataBaseManagerClass(self.config['DB_PATH_1'], self.config['DB_PATH_2'], self.config['LIMIT'])
+            db = DataBaseManagerClass(self.config['DB_PATH'], self.config['LIMIT'])
             db.create_dbs()
             tracker = TrackerClass1()
             tracker.detection_and_tracking_1_for_local_system()
@@ -36,7 +36,7 @@ class MultiprocessingForTrackers:
     def task_2(self):
         try:
             logger.info("Task 2 Starting.")
-            db = DataBaseManagerClass(self.config['DB_PATH_1'], self.config['DB_PATH_2'], self.config['LIMIT'])
+            db = DataBaseManagerClass(self.config['DB_PATH'], self.config['LIMIT'])
             db.create_dbs()
             tracker = TrackerClass2()
             tracker.detection_and_tracking_2_for_local_system()
@@ -140,7 +140,7 @@ if __name__ == '__main__':
         
         if run:
             logger.info("processing_unit() Function Run Completed Successfully From [MultiprocessingForTrackers()] Class.")
-            db = DataBaseManagerClass(config['DB_PATH_1'], config['DB_PATH_2'], config['LIMIT'])
+            db = DataBaseManagerClass(config['DB_PATH'] config['LIMIT'])
             db.view_database_records()
             sys.exit(0)
         else:
