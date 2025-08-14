@@ -39,7 +39,6 @@ def load_config(config_path):
         logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
         raise CustomException(e, sys)'''
 
-
 def load_yolo_model(model_path):
     try:
         # SOLUTION: Set torch serialization to allow unsafe loading
