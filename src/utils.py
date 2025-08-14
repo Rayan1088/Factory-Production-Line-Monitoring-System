@@ -21,10 +21,8 @@ def load_config(config_path):
         logger.error(f"Error Occurred During Loading Configuration File: {e}")
         raise CustomException(e, sys)
 
-def load_yolo_model(model_path):
+'''def load_yolo_model(model_path):
     try:
-        # Add safe globals before loading
-        torch.serialization.add_safe_globals([DetectionModel])
         model = YOLO(model_path)
         logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
         
@@ -39,7 +37,32 @@ def load_yolo_model(model_path):
     
     except Exception as e:
         logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
-        raise CustomException(e, sys) 
+        raise CustomException(e, sys)'''
+
+def load_yolo_model(model_path):
+    try:
+        import torch.nn as nn
+        from torch.serialization import add_safe_globals
+        from ultralytics.nn.tasks import DetectionModel  # Ensure correct import
+
+        # Allowlist necessary YOLO globals
+        add_safe_globals([DetectionModel, nn.Sequential])
+
+        model = YOLO(model_path)  # Will now load safely
+        logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
+
+        # For custom models to see the class names
+        names = model.names
+        logger.info(f"Fine Tuned Model Has [{len(names)}] Classes.")
+        logger.info(f"Custom Class Names:")
+        for index, name in names.items():
+            logger.info(f"Class [{index}]: [{name}]")
+
+        return model, names
+
+    except Exception as e:
+        logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
+        raise CustomException(e, sys)
 
 def capture_video_get_properties(video_path):
     try:
