@@ -607,6 +607,7 @@ def check_line_intersect( x1, y1, x2, y2, line_coords):
     logger.debug(f"Intersection Results: [{intersects}].")   
     return intersects
 
+# Resource cleanup functions 
 def close_database_connection(db_manager, cleanup_status):
     try:
         logger.info("Closing Database Connection...........")
