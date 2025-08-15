@@ -24,7 +24,6 @@ class DataBaseManagerClass:
                 raise CustomException(e, sys)   
         else:
             self.db_path = db_path
-            self.limit = limit
             self.create_dbs()
             self.init_dbs()
     
@@ -43,15 +42,15 @@ class DataBaseManagerClass:
     def init_turso_dbs(self):
         try:
             self.client.execute(''' CREATE TABLE IF NOT EXISTS tracking_box_counts (
-                                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                        total_box_in INTEGER DEFAULT 0,
-                                        total_box_out INTEGER DEFAULT 0,
-                                        date_time DATETIME DEFAULT CURRENT_TIMESTAMP) ''')  
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    total_box_in INTEGER DEFAULT 0,
+                                    total_box_out INTEGER DEFAULT 0,
+                                    date_time DATETIME DEFAULT CURRENT_TIMESTAMP) ''')  
             
             self.client.execute(''' CREATE TABLE IF NOT EXISTS tracking_cement_bag_counts (
-                                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                        total_cement_bag_out INTEGER DEFAULT 0,
-                                        date_time DATETIME DEFAULT CURRENT_TIMESTAMP) ''') 
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    total_cement_bag_out INTEGER DEFAULT 0,
+                                    date_time DATETIME DEFAULT CURRENT_TIMESTAMP) ''') 
             logger.info("Turso Database Tables Created Successfully.")
         except Exception as e:
             logger.error(f"Error Occurred During Create Turso Database Tables: {e}")
@@ -68,7 +67,7 @@ class DataBaseManagerClass:
             # Check If Table Exists Or Not
             cursor.execute(''' SELECT name FROM sqlite_master WHERE
                                  type = 'table' AND name = 'tracking_cement_bag_counts' ''')
-            # For Boxs 
+            
             if not cursor.fetchone():
                 cursor.execute(''' CREATE TABLE tracking_box_counts (
                                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,7 +78,6 @@ class DataBaseManagerClass:
             else:
                 logger.info("The Table [tracking_box_counts] Already Exists.") 
             
-            # For Cements Bags 
             if not cursor.fetchone():
                 cursor.execute(''' CREATE TABLE tracking_cement_bag_counts (
                                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,16 +167,15 @@ class DataBaseManagerClass:
                 cursor.execute(''' SELECT total_cement_bag_out, date_time
                                    FROM tracking_cement_bag_counts ORDER BY date_time DESC LIMIT ? ''', (self.limit,))
                 records = cursor.fetchall()
-                logger.info(f"Successfully Retrieve Recent Cement Bags Tracking Records From Database [{self.db_path_2}].")
+                logger.info(f"Successfully Retrieve Recent Cement Bags Tracking Records From Database [{self.db_path}].")
                 connection.close()
                 return records          
         except Exception as e:
-            logger.error(f"Error Occurred During Retrieve Recent Cement Bags Tracking Records From Database [{self.db_path_2}]: {e}")
+            logger.error(f"Error Occurred During Retrieve Recent Cement Bags Tracking Records From Database [{self.db_path}]: {e}")
             raise CustomException(e, sys)
     
     def view_database_records(self):
         try:
-            # For Boxs
             records_1 = self.get_recent_counts_for_boxs()
             print("\n" + "="*80)
             print(f"{'Total Box In':<15} {'Total Box Out':<15} {'Date_time':<20}")
@@ -188,7 +185,6 @@ class DataBaseManagerClass:
                 print(f"{total_box_in:<15} {total_box_out:<15} {date_time:<20}")
             print("="*80)
             
-            # For Cements Bags
             records_2 = self.get_recent_counts_for_cement_bags()
             print("\n" + "="*80)
             print(f"{'Total Cement Bag Out':<18} {'Date_time':<20}")
