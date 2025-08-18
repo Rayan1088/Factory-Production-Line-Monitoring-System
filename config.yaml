@@ -1,7 +1,7 @@
 # Model and data path
-MODEL_PATH: 'weights/best.pt'
-VIDEO_SOURCE_1: 'video data/box.mp4'
-VIDEO_SOURCE_2: 'video data/pac.mp4'
+MODEL_PATH: 'F:/CV Projects/Factory Production Line/Factory-Production-Line-Monitoring-System/weights/best.pt'
+VIDEO_SOURCE_1: 'F:/CV Projects/Factory Production Line/Factory-Production-Line-Monitoring-System/video data/box.mp4'
+VIDEO_SOURCE_2: 'F:/CV Projects/Factory Production Line/Factory-Production-Line-Monitoring-System/video data/pac.mp4'
 
 # Frame processing
 SKIP_FRAMES_FOR_TRACKER_1: 2
@@ -21,7 +21,10 @@ MINIMUM_MOVEMENT_THRESHOLD: 5
 
 # Database save interval
 DATABASE_SAVE_TIME_INTERVAL: 60
-DB_PATH: 'tracking_data.db'
+LOCAL_DB_PATH: 'F:/CV Projects/Factory Production Line/Factory-Production-Line-Monitoring-System/tracking_data.db'
+TURSO_DB_URL: 'libsql://trackingdata-rayan1088.aws-ap-south-1.turso.io'
+TURSO_DB_TOKEN: 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NTU0Nzc4MzIsImlkIjoiM2RkYjk3MjAtZTBjMS00YjU0LTlhNjUtZmY1MjMyMGE2Nzk2IiwicmlkIjoiMDJiY2JiY2UtOGE5YS00MDZhLWFkYmQtYmVhOTFjZjdjODcxIn0.r7UydIO02UdAOSxm6ELqj6RejxrJ-_gIGKxmJYFISLdt4kyVzCwNxJsX4WVtt9VSFUQKxRKuYAZwH8N7CoTFDw'
+DB_TABLE_NAMES: ['tracking_box_counts', 'tracking_cement_bag_counts']
 LIMIT: 1000
 
 # Counting lines
