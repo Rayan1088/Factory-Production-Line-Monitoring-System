@@ -3,13 +3,14 @@ import sys
 import yaml
 import time
 import torch
+import warnings
 from ultralytics import YOLO
+import ultralytics.nn.tasks
 from ultralytics.nn.tasks import DetectionModel
 from collections import deque
 from src.exception import CustomException
 from src.logger import logging
 
-# Create a logger instance
 logger = logging.getLogger("utils")
 
 def load_config(config_path):
@@ -21,129 +22,96 @@ def load_config(config_path):
         logger.error(f"Error Occurred During Loading Configuration File: {e}")
         raise CustomException(e, sys)
 
-'''def load_yolo_model(model_path):
-    try:
-        model = YOLO(model_path)
-        logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
-        
-        # For custom models to see the class names
-        names = model.names
-        logger.info(f"Fine Tuned Model Has [{len(names)}] Classes.")
-        logger.info(f"Custom Class Names:")
-        for index, name in names.items():
-            logger.info(f"Class [{index}]: [{name}]")
-            
-        return model, names
-    
-    except Exception as e:
-        logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
-        raise CustomException(e, sys)'''
-
 def load_yolo_model(model_path):
-    try:
-        # SOLUTION: Set torch serialization to allow unsafe loading
-        # This is needed for PyTorch 2.6+ compatibility with YOLO models
-        original_weights_only = torch.serialization.get_default_load_endianness()
-        
-        # Temporarily disable weights_only for YOLO model loading
-        torch.serialization.add_safe_globals([
-            torch.nn.modules.container.Sequential,
-            torch.nn.modules.conv.Conv2d,
-            torch.nn.modules.batchnorm.BatchNorm2d,
-            torch.nn.modules.activation.ReLU,
-            torch.nn.modules.activation.SiLU,
-            torch.nn.modules.pooling.MaxPool2d,
-            torch.nn.modules.pooling.AdaptiveAvgPool2d,
-            torch.nn.modules.linear.Linear,
-            torch.nn.modules.dropout.Dropout,
-        ])
-        
-        # Alternative approach: Monkey patch torch.load temporarily
-        original_torch_load = torch.load
-        
-        def patched_torch_load(*args, **kwargs):
-            # Force weights_only=False for YOLO model loading
-            kwargs['weights_only'] = False
-            return original_torch_load(*args, **kwargs)
-        
-        # Temporarily replace torch.load
-        torch.load = patched_torch_load
-        
-        try:
-            # Now load the YOLO model - this should work without the weights_only error
-            model = YOLO(model_path)
-            logger.info(f"Model Loaded Successfully From, [{model_path}] Path.")
-            
-            # For custom models to see the class names
-            names = model.names
-            logger.info(f"Fine Tuned Model Has [{len(names)}] Classes.")
-            logger.info(f"Custom Class Names:")
-            for index, name in names.items():
-                logger.info(f"Class [{index}]: [{name}]")
-                
-            return model, names
-            
-        finally:
-            # Always restore the original torch.load function
-            torch.load = original_torch_load
+    original_torch_load = torch.load
+    safe_globals_list = [torch.nn.modules.container.Sequential ,
+                         torch.nn.modules.conv.Conv2d,
+                         torch.nn.modules.conv.ConvTranspose2d,
+                         torch.nn.modules.batchnorm.BatchNorm2d,
+                         torch.nn.modules.activation.ReLU,
+                         torch.nn.modules.activation.SiLU,
+                         torch.nn.modules.activation.LeakyReLU,
+                         torch.nn.modules.pooling.MaxPool2d,
+                         torch.nn.modules.pooling.AdaptiveAvgPool2d,
+                         torch.nn.modules.linear.Linear,
+                         torch.nn.modules.dropout.Dropout,
+                         torch.nn.modules.normalization.GroupNorm,
+                         torch.nn.modules.upsampling.Upsample]
     
-    except Exception as e:
-        logger.error(f"Failed To Load The Fine Tune Model From, [{model_path}] Path: {e}")
-        
-        # Try alternative approach if the first one fails
+    def model_info(model, method_name):
+        names = model.names
+        logger.info(f"Model Loaded Successfully Using [{method_name}] From [{model_path}].")
+        logger.info(f"Fine Tuned Model Has [{len(names)}] Classes.")
+        logger.info("Custom Class Names:")
+        for idx , name in names.items():
+            logger.info(f"Class [{idx}]: [{name}].") 
+        return model, names 
+
+    # Method-01 Add safe globals and monkey patch 
+    try:
+        logger.info("Attempting Method-01: Add safe globals and monkey patch torch.load.")
+        torch.serialization.add_safe_globals(safe_globals_list)
+
+        # Monkey patch torch.load
+        def patched_torch_load(*args, **kwargs):
+            kwargs['weights_only'] = False  
+            return original_torch_load(*args, **kwargs) 
+        torch.load = patched_torch_load
         try:
-            logger.info("Trying alternative loading method...")
-            
-            # Method 2: Use context manager for safe globals
-            with torch.serialization.safe_globals([
-                torch.nn.modules.container.Sequential,
-                torch.nn.modules.conv.Conv2d,
-                torch.nn.modules.batchnorm.BatchNorm2d,
-                torch.nn.modules.activation.ReLU,
-                torch.nn.modules.activation.SiLU,
-                torch.nn.modules.pooling.MaxPool2d,
-                torch.nn.modules.pooling.AdaptiveAvgPool2d,
-                torch.nn.modules.linear.Linear,
-                torch.nn.modules.dropout.Dropout,
-            ]):
+            model = YOLO(model_path)
+            return model_info(model, "Method-01")
+        finally:
+            torch.load = original_torch_load      
+                 
+    except Exception as e:
+        logger.error(f"Failed Method-01 To Load The Fine Tune Model From [{model_path}]: {e}")
+        
+        # Method-02: Use context manager for safe globals
+        try:
+            logger.info("Attempting Method-02: Use context manager for safe globals.")
+            with torch.serialization.safe_globals(safe_globals_list):
                 model = YOLO(model_path)
-                names = model.names
-                logger.info(f"Model Loaded Successfully Using Alternative Method From, [{model_path}] Path.")
-                return model, names
-                
-        except Exception as e2:
-            logger.error(f"Alternative loading method also failed: {e2}")
+                return model_info(model, "Method-02")
+       
+        except Exception as e:
+            logger.error(f"Failed Method-02 To Load The Fine Tune Model From [{model_path}]: {e}")
             
-            # Method 3: Final fallback - load with explicit weights_only=False
+            # Method-03: Comprehensive patching approach
             try:
-                logger.info("Trying final fallback method...")
-                
-                # Monkey patch at module level
-                import ultralytics.nn.tasks
-                original_load = torch.load
-                
+                logger.info("Attempting Method-03: Use Comprehensive patching approach.")
+    
                 def safe_load(*args, **kwargs):
-                    kwargs.pop('weights_only', None)  # Remove if present
+                    kwargs.pop('weights_only', None)
                     kwargs['weights_only'] = False
-                    return original_load(*args, **kwargs)
+                    return original_torch_load(*args, **kwargs)
                 
                 torch.load = safe_load
-                ultralytics.nn.tasks.torch.load = safe_load
+                if hasattr(ultralytics.nn.tasks, 'torch'):
+                    ultralytics.nn.tasks.torch.load = safe_load
                 
-                model = YOLO(model_path)
-                names = model.names
+                try:
+                    model = YOLO(model_path)
+                    return model_info(model, "Method-03")
+                finally:
+                    torch.load = original_torch_load
+                    if hasattr(ultralytics.nn.tasks, 'torch'):
+                        ultralytics.nn.tasks.torch.load = original_torch_load
+            
+            except Exception as e:
+                logger.error(f"Failed Method-03 To Load The Fine Tune Model From [{model_path}]: {e}")
                 
-                # Restore original
-                torch.load = original_load
-                ultralytics.nn.tasks.torch.load = original_load
+                # Method-04: Direct YOLO loading with error handling
+                try:
+                    logger.info("Attempting Method-04: Direct YOLO loading with error handling.")
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        model = YOLO(model_path)
+                        return model_info(model, "Method-04")
                 
-                logger.info(f"Model Loaded Successfully Using Final Fallback From, [{model_path}] Path.")
-                return model, names
-                
-            except Exception as e3:
-                logger.error(f"All loading methods failed: {e3}")
-                raise CustomException(e, sys)
-
+                except Exception as e:
+                    logger.error(f"Failed All Method To Load The Fine Tune Model From [{model_path}]: {e}")
+                    raise CustomException(e, sys)
+            
 def capture_video_get_properties(video_path):
     try:
         cap = cv2.VideoCapture(video_path)
@@ -151,7 +119,6 @@ def capture_video_get_properties(video_path):
         if not cap.isOpened():
             raise CustomException(f"Error opening video file: {video_path}", sys)
         
-        # Get video properties
         fps = int(cap.get(cv2.CAP_PROP_FPS))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -201,7 +168,7 @@ def get_next_frame(next_frame_index, skip_frames, total_frames, cap, frame_width
     try:
         resize_frame = cv2.resize(frame, (frame_width, frame_height))
         # Frame Size Cant Not Be Changed, As It Will Cause The Tracking To Fail
-        # Becase The Tracking Line Is Drawn Based On The Original Frame Size (800, 500)
+        # Becase The Tracking Line Is Drawn Based On The Input Frame Size (800, 500)
     except Exception as e:
         logger.error(f"Error Occurred During Resize The Frame [{target_frame}]: {e}")
         return None, None
@@ -716,3 +683,4 @@ def force_cleanup(cap, db_manager):
     
     logger.info("Force Cleanup Completed Successfully.")
     
+
