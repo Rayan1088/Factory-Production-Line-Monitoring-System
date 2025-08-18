@@ -8,7 +8,7 @@ The system consists of two main trackers:
 - **TrackerClass1**: Monitors boxes **entering** and **exiting** the production line, counting **"in"** and **"out"** movements.
 - **TrackerClass2**: Monitors cement bags **exiting** the production line, counting **"out"** movements.
 
-**Both trackers process video feeds, detect objects, track their movement acress predefine counting lines, and store counts in **SQLite database**.
+**Both trackers process video feeds, detect objects, track their movement acress predefine counting lines, and store counts in SQLite database**.
 
 ## Features
 - **Object Detection and Tracking**: Uses **Yolo11m** for detection and tracking **boxes (class 0)** and **cementbags (class 1)**, where we use YOLO's pre-build **Bot-SHORT** tracker algorithm.    
