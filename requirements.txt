@@ -1,8 +1,8 @@
-ultralytics==8.3.179
-lap==0.5.12
+ultralytics==8.3.179    # Streamlit cloud app deploy support
+lap==0.5.12             
 pandas
-numpy
+numpy<2                 # Streamlit cloud app deploy support
 libsql-client
 streamlit
-opencv-python-headless
+opencv-python-headless  # if you don’t need GUI then use headless of the opencv-python .
 pyyaml
