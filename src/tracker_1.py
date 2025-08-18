@@ -1,5 +1,3 @@
-# N.B. To run on the local system please "Uncomment" some following codes
-# N.B. Comment some line of code of "Streamlit App".
 import cv2
 import os
 import sys
@@ -9,14 +7,11 @@ from src.logger import logging
 from src.databaseManager import DataBaseManagerClass
 from src.utils import *
 
-# Create a logger instance
 logger = logging.getLogger("tracker_1") 
 
 class TrackerClass1:
-     
-    def __init__(self, config_path="config.yaml"):
+    def __init__(self, config_path="config.yaml", use_turso_db=False):
         
-        # Load configuration from YAML file
         self.config = load_config(config_path)
       
         if not os.path.exists(self.config['MODEL_PATH']):
@@ -64,7 +59,15 @@ class TrackerClass1:
         # Initialize time and database 
         self.last_save_time = time.time() 
         try:
-            self.db_manager = DataBaseManagerClass(self.config['DB_PATH'], self.config['LIMIT'])
+            if use_turso_db:
+                self.db_manager = DataBaseManagerClass(local_db_path= self.config['LOCAL_DB_PATH'], # Fallback
+                                                       turso_db_url = self.config['TURSO_DB_URL'], 
+                                                       turso_db_token = self.config['TURSO_DB_TOKEN'],
+                                                       limit = self.config['LIMIT'])
+            else:
+                self.db_manager = DataBaseManagerClass(local_db_path = self.config['LOCAL_DB_PATH'],
+                                                       limit = self.config['LIMIT'])
+            
             self.status['database_ready'] = True
         except Exception as e:
             logger.error(f"Error Initializing Database Manager From [TrackerClass1]: {e}")
@@ -95,9 +98,9 @@ class TrackerClass1:
             logger.error(f"Error Initializing Model Or Video Capture From [TrackerClass1]: {e}")
             raise CustomException(e, sys)
         
-        # self.mouse_callback = mouse_callback
-        # cv2.namedWindow("Camera 01/Video 01")
-        # cv2.setMouseCallback("Camera 01/Video 01", self.mouse_callback)
+        self.mouse_callback = mouse_callback
+        cv2.namedWindow("Camera 01/Video 01")
+        cv2.setMouseCallback("Camera 01/Video 01", self.mouse_callback)
          
     def check_line_crossing(self, track_id):
         if track_id not in self.dictionary:
@@ -316,11 +319,54 @@ class TrackerClass1:
             logger.error(f"Error Occurred During Add The Text On The Frame From [TrackerClass1]: {e}")
         
         # Show The Frame
-        # try:
-            # cv2.imshow("Camera 01/Video 01", frame)
-        # except Exception as e:
-            # logger.error(f"Error Displaying Frame From [TrackerClass1]: {e}")
-            # raise CustomException(e, sys) 
+        try:
+            cv2.imshow("Camera 01/Video 01", frame)
+        except Exception as e:
+            logger.error(f"Error Displaying Frame From [TrackerClass1]: {e}")
+            raise CustomException(e, sys) 
+
+        return current_frame_ids 
+    
+    def process_each_frame_for_streamlit_app(self, model, frame, names, dictionary, frame_count):
+        current_frame_ids = set()
+        try:
+            # Track Objects (For Box Class = 0 And Cement Bag Class =1)
+            track_results = model.track(frame, persist=True, classes=[0])
+            # Extract tracking information
+            ids, boxes, class_ids, conf = extract_object_results(track_results) 
+        
+        except Exception as e:
+            logger.error(f"Error Occurred During Tracking Objects From [TrackerClass1]: {e}")
+            cleanup_inactive_ids(self.dictionary,
+                                current_frame_ids,
+                                self.current_frame_number,
+                                self.config['MAX_FRAMES_MISSING'],
+                                self.config['MAX_DICTIONARY_SIZE'])
+            return
+        
+        # Processing track results 
+        try:
+            current_frame_ids = self.processing_tracking_results(frame, names, dictionary, frame_count, ids, boxes, class_ids, conf)
+        except Exception as e:
+            logger.error(f"Error Occurred During Process Tracking Results From [TrackerClass1]: {e}")
+        finally:
+            cleanup_inactive_ids(self.dictionary,
+                                current_frame_ids,
+                                self.current_frame_number,
+                                self.config['MAX_FRAMES_MISSING'],
+                                self.config['MAX_DICTIONARY_SIZE'])
+
+        # Draw counting line
+        try:
+            self.draw_counting_line(frame)
+        except Exception as e:
+            logger.error(f"Error Occurred During Draw The Counting Line From [TrackerClass1]: {e}")
+        
+        # Add counting info over the frame
+        try:
+            self.add_text_on_frame(frame) 
+        except Exception as e:
+            logger.error(f"Error Occurred During Add The Text On The Frame From [TrackerClass1]: {e}")
 
         return current_frame_ids 
      
@@ -496,16 +542,13 @@ class TrackerClass1:
             self.status['video_capture_released'] = False
 
         # Close OpenCV windows
-        # try:
-            # close_opencv_windows(self.status, self.config['OPENCV_WAIT_KEY_DELAY'], self.config['WINDOW_CLEANUP_DELAY'])
-            # self.status['windows_closed'] = True
-            # logger.info("Close Opencv Windows Successfully From [TrackerClass1].")
-        # except Exception as e:
-            # logger.error(f"Error Occurred During Close OpenCV Windows From [TrackerClass1]: {e}")
-            # self.status['windows_closed'] = False
-        
-        # No windows to close in Streamlit mode
-        self.status['windows_closed'] = True # Comment this line when run the code in local system
+        try:
+            close_opencv_windows(self.status, self.config['OPENCV_WAIT_KEY_DELAY'], self.config['WINDOW_CLEANUP_DELAY'])
+            self.status['windows_closed'] = True
+            logger.info("Close Opencv Windows Successfully From [TrackerClass1].")
+        except Exception as e:
+            logger.error(f"Error Occurred During Close OpenCV Windows From [TrackerClass1]: {e}")
+            self.status['windows_closed'] = False
             
         try:
             log_cleanup_status(self.status)
@@ -638,7 +681,7 @@ class TrackerClass1:
             self.current_frame_number = frame_number 
             
             # Process each frame
-            self.process_each_frame(self.model, frame, self.names, self.dictionary,  self.current_frame_number)
+            self.process_each_frame_for_streamlit_app(self.model, frame, self.names, self.dictionary,  self.current_frame_number)
             
             self.frames_processed_count += 1
             self.next_frame_index += 1
@@ -660,3 +703,4 @@ class TrackerClass1:
         except Exception as e:
             logger.error(f"Error Occurred In detection_and_tracking_1_for_streamlit_app() Function From [TrackerClass1]: {e}")
             return None, False
+
