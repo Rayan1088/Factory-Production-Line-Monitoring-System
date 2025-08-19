@@ -29,7 +29,87 @@ def display_database_page(table_name, title, use_turso_db=False):
         return None
     
     st.subheader(title)
-    with st.spinner(f"Loading {title.lower()} Data..! Please Wait."):
+    with st.spinner(f"Loading {title.lower()} Data..! Please Wait !"):
+        df = db_manager.fetch_database_records(table_name)
+    
+    if not df.empty:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Records", len(df))
+        
+        def safe_get_value(df, column_name, default=0):
+            """Safely extract a scalar value from DataFrame"""
+            try:
+                if column_name in df.columns and len(df) > 0:
+                    value = df.iloc[0][column_name]
+                    # If it's a Series, get the first value
+                    if hasattr(value, 'iloc'):
+                        return value.iloc[0]
+                    return value
+                return default
+            except (IndexError, KeyError, TypeError):
+                return default
+        
+        with col2:
+            if use_turso_db:
+                if table_name == "tracking_box_counts":
+                    st.metric("Latest Box In", safe_get_value(df, 't'))
+                else:
+                    st.metric("Latest Bags Out", safe_get_value(df, 't'))
+            else:
+                if table_name == "tracking_box_counts":
+                    st.metric("Latest Box In", safe_get_value(df, 'total_box_in'))
+                else:
+                    st.metric("Latest Bags Out", safe_get_value(df, 'total_cement_bag_out'))
+        
+        with col3:
+            if use_turso_db:
+                if table_name == "tracking_box_counts":
+                    st.metric("Latest Box Out", safe_get_value(df, 't_1'))
+                # No col3 metric for bags table in turso_db case
+            else:
+                if table_name == "tracking_box_counts":
+                    st.metric("Latest Box Out", safe_get_value(df, 'total_box_out'))
+                # No col3 metric for bags table in local db case
+
+        st.dataframe(df, use_container_width=True)
+        
+        download_csv = df.to_csv(index=False)
+        st.download_button(
+            label=f"Download {title} As CSV.",
+            data=download_csv,
+            file_name=f"{table_name}_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv")
+    else:
+        st.info(f"No Data Found In [{table_name}] Table.")
+
+
+
+
+
+
+
+
+
+'''def display_database_page(table_name, title, use_turso_db=False):
+    try:
+        if use_turso_db:
+            db_manager = DataBaseManagerClass(local_db_path= config['LOCAL_DB_PATH'], 
+                                              turso_db_url = config['TURSO_DB_URL'], 
+                                              turso_db_token = config['TURSO_DB_TOKEN'],
+                                              limit = config['LIMIT'])
+        else:
+            db_manager = DataBaseManagerClass(local_db_path = config['LOCAL_DB_PATH'], limit = config['LIMIT'])            
+    except Exception as e:
+        st.error(f"Error Initializing Database Connection: {e}")
+        return None
+
+    if not db_manager.is_db_connected():
+        st.error("Failed To Connect To The Database.")
+        return None
+    
+    st.subheader(title)
+    with st.spinner(f"Loading {title.lower()} Data..! Please Wait !"):
         df = db_manager.fetch_database_records(table_name)
     
     if not df.empty:
@@ -39,11 +119,11 @@ def display_database_page(table_name, title, use_turso_db=False):
         with col2:
             if use_turso_db:
                 if table_name == "tracking_box_counts":
-                    st.metric("Latest Box In", df.iloc[0]['t'].values[0] if 't' in df.columns else 0)
+                    st.metric("Latest Box In", df.iloc[0]['t'] if 't' in df.columns else 0)
                     with col3:
-                        st.metric("Latest Box Out", df.iloc[0]['t_1'].values[0] if 't_1' in df.columns else 0)
+                        st.metric("Latest Box Out", df.iloc[0]['t_1'] if 't_1' in df.columns else 0)
                 else:
-                    st.metric("Latest Bags Out", df.iloc[0]['t'].values[0] if 't' in df.columns else 0)
+                    st.metric("Latest Bags Out", df.iloc[0]['t'] if 't' in df.columns else 0)
                 
             else:
                 if table_name == "tracking_box_counts":
@@ -62,7 +142,7 @@ def display_database_page(table_name, title, use_turso_db=False):
             file_name=f"{table_name}_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv")
     else:
-        st.info(f"No Data Found In [{table_name}] Table.") 
+        st.info(f"No Data Found In [{table_name}] Table.")'''
 
 def main_app(use_turso_db, streamlit):
     st.title("Factory Production Line Multiprocessing Tracking-System")
