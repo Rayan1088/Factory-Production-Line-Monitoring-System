@@ -35,11 +35,7 @@ def display_database_page(table_name, title, use_turso_db=False):
     if not df.empty:
         if not df.columns.is_unique:
             df.columns = pd.io.common.dedup_names(df.columns, is_potential_multiindex=False)
-            
-        col1 = st.columns(1)
-        with col1:
-            st.metric("Total Records", len(df))
-            
+
         st.dataframe(df, use_container_width=True)
         
         download_csv = df.to_csv(index=False)
