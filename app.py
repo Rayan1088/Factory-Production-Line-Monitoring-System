@@ -33,6 +33,24 @@ def display_database_page(table_name, title, use_turso_db=False):
         df = db_manager.fetch_database_records(table_name)
     
     if not df.empty:
+        # Fix duplicate column names
+        if not df.columns.is_unique:
+            st.warning(f"Duplicate column names detected in {table_name}: {list(df.columns)}")
+            
+            # Method 1: Make column names unique by adding suffixes
+            df.columns = pd.io.common.dedup_names(df.columns, is_potential_multiindex=False)
+            
+            # Alternative Method 2: Rename duplicates manually
+            # cols = df.columns.tolist()
+            # seen = {}
+            # for i, col in enumerate(cols):
+            #     if col in seen:
+            #         seen[col] += 1
+            #         cols[i] = f"{col}_{seen[col]}"
+            #     else:
+            #         seen[col] = 0
+            # df.columns = cols
+        
         st.dataframe(df, use_container_width=True)
         download_csv = df.to_csv(index=False)
         st.download_button(
