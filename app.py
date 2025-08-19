@@ -114,7 +114,7 @@ def main_app(use_turso_db, streamlit):
                 fps_Tracker_1 = Tracker_1.fps if hasattr(Tracker_1, 'fps') and Tracker_1.fps and Tracker_1.fps > 0 else 30
                 fps_Tracker_2 = Tracker_2.fps if hasattr(Tracker_2, 'fps') and Tracker_2.fps and Tracker_2.fps > 0 else 30
                 
-                max_iterations = 82
+                max_iterations = 100
                 iteration_count = 0
                 
                 progress_bar = st.progress(0)
