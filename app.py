@@ -14,7 +14,7 @@ config = load_config(config_path="config.yaml")
 def display_database_page(table_name, title, use_turso_db=False):
     try:
         if use_turso_db:
-            db_manager = DataBaseManagerClass(local_db_path= config['LOCAL_DB_PATH'], 
+            db_manager = DataBaseManagerClass(local_db_path= config['LOCAL_DB_PATH'], # Fallback
                                               turso_db_url = config['TURSO_DB_URL'], 
                                               turso_db_token = config['TURSO_DB_TOKEN'],
                                               limit = config['LIMIT'])
@@ -29,29 +29,19 @@ def display_database_page(table_name, title, use_turso_db=False):
         return None
     
     st.subheader(title)
-    with st.spinner(f"Loading {title.lower()} Data..! Please Wait !"):
+    with st.spinner(f"Loading {title.lower()} Data..! Please Wait."):
         df = db_manager.fetch_database_records(table_name)
     
     if not df.empty:
-        # Fix duplicate column names
         if not df.columns.is_unique:
-            st.warning(f"Duplicate column names detected in {table_name}: {list(df.columns)}")
-            
-            # Method 1: Make column names unique by adding suffixes
             df.columns = pd.io.common.dedup_names(df.columns, is_potential_multiindex=False)
             
-            # Alternative Method 2: Rename duplicates manually
-            # cols = df.columns.tolist()
-            # seen = {}
-            # for i, col in enumerate(cols):
-            #     if col in seen:
-            #         seen[col] += 1
-            #         cols[i] = f"{col}_{seen[col]}"
-            #     else:
-            #         seen[col] = 0
-            # df.columns = cols
-        
+        col1 = st.columns(1)
+        with col1:
+            st.metric("Total Records", len(df))
+            
         st.dataframe(df, use_container_width=True)
+        
         download_csv = df.to_csv(index=False)
         st.download_button(
             label=f"Download {title} As CSV.",
@@ -59,7 +49,7 @@ def display_database_page(table_name, title, use_turso_db=False):
             file_name=f"{table_name}_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv")
     else:
-        st.info(f"No Data Found In [{table_name}] Table.")
+        st.info(f"No Data Found In [{table_name}] Table.") 
 
 def main_app(use_turso_db, streamlit):
     st.title("Factory Production Line Multiprocessing Tracking-System")
