@@ -14,12 +14,12 @@ config = load_config(config_path="config.yaml")
 def display_database_page(table_name, title, use_turso_db=False):
     try:
         if use_turso_db:
-            db_manager = DataBaseManagerClass(local_db_path= config['LOCAL_DB_PATH'], 
-                                              turso_db_url = config['TURSO_DB_URL'], 
-                                              turso_db_token = config['TURSO_DB_TOKEN'],
-                                              limit = config['LIMIT'])
+            db_manager = DataBaseManagerClass(local_db_path=config['LOCAL_DB_PATH'], 
+                                              turso_db_url=config['TURSO_DB_URL'], 
+                                              turso_db_token=config['TURSO_DB_TOKEN'],
+                                              limit=config['LIMIT'])
         else:
-            db_manager = DataBaseManagerClass(local_db_path = config['LOCAL_DB_PATH'], limit = config['LIMIT'])            
+            db_manager = DataBaseManagerClass(local_db_path=config['LOCAL_DB_PATH'], limit=config['LIMIT'])            
     except Exception as e:
         st.error(f"Error Initializing Database Connection: {e}")
         return None
