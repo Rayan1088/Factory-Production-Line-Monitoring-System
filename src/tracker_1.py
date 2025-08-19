@@ -10,7 +10,7 @@ from src.utils import *
 logger = logging.getLogger("tracker_1") 
 
 class TrackerClass1:
-    def __init__(self, config_path="config.yaml", use_turso_db=False):
+    def __init__(self, config_path="config.yaml", use_turso_db=False, streamlit=False):
         
         self.config = load_config(config_path)
       
@@ -98,9 +98,12 @@ class TrackerClass1:
             logger.error(f"Error Initializing Model Or Video Capture From [TrackerClass1]: {e}")
             raise CustomException(e, sys)
         
-        self.mouse_callback = mouse_callback
-        cv2.namedWindow("Camera 01/Video 01")
-        cv2.setMouseCallback("Camera 01/Video 01", self.mouse_callback)
+        if streamlit:
+            logger.info("Run Streamlit App On Cloud.")
+        else:    
+            self.mouse_callback = mouse_callback
+            cv2.namedWindow("Camera 01/Video 01")
+            cv2.setMouseCallback("Camera 01/Video 01", self.mouse_callback)
          
     def check_line_crossing(self, track_id):
         if track_id not in self.dictionary:
