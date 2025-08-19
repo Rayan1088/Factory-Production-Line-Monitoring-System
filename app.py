@@ -64,7 +64,7 @@ def display_database_page(table_name, title, use_turso_db=False):
     else:
         st.info(f"No Data Found In [{table_name}] Table.") 
 
-def main_app(use_turso_db):
+def main_app(use_turso_db, streamlit):
     st.title("Factory Production Line Multiprocessing Tracking-System")
 
     st.sidebar.markdown("<div style='font-size:34px; font-weight:bold; color:red;'>Select A Page</div>", unsafe_allow_html=True)
@@ -103,8 +103,8 @@ def main_app(use_turso_db):
             
             try:
                 with st.spinner("Initializing Trackers...! Please Wait !"):
-                    Tracker_1 = TrackerClass1(config_path="config.yaml", use_turso_db=True)
-                    Tracker_2 = TrackerClass2(config_path="config.yaml", use_turso_db=True)
+                    Tracker_1 = TrackerClass1(config_path="config.yaml", use_turso_db=True, streamlit=streamlit)
+                    Tracker_2 = TrackerClass2(config_path="config.yaml", use_turso_db=True, streamlit=streamlit)
                 
                 st.success("Initialized Trackers Successfully!")
                 
@@ -204,5 +204,5 @@ def main_app(use_turso_db):
         display_database_page(table_name=table_name[1], title=table_name[1], use_turso_db=use_turso_db)
                           
 if __name__ == "__main__":
-    main_app(use_turso_db=True)
+    main_app(use_turso_db=True, streamlit=True)
     
