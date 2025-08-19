@@ -33,9 +33,6 @@ def display_database_page(table_name, title, use_turso_db=False):
         df = db_manager.fetch_database_records(table_name)
     
     if not df.empty:
-        col1 = st.columns(1)
-        with col1:
-            st.metric("Total Records", len(df))
         st.dataframe(df, use_container_width=True)
         download_csv = df.to_csv(index=False)
         st.download_button(
