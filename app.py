@@ -33,6 +33,7 @@ def display_database_page(table_name, title, use_turso_db=False):
         df = db_manager.fetch_database_records(table_name)
     
     if not df.empty:
+        # Check for duplicates column names
         if not df.columns.is_unique:
             df.columns = pd.io.common.dedup_names(df.columns, is_potential_multiindex=False)
 
