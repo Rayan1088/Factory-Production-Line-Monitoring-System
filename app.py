@@ -83,14 +83,6 @@ def display_database_page(table_name, title, use_turso_db=False):
     else:
         st.info(f"No Data Found In [{table_name}] Table.")
 
-
-
-
-
-
-
-
-
 '''def display_database_page(table_name, title, use_turso_db=False):
     try:
         if use_turso_db:
