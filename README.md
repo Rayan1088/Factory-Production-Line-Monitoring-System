@@ -1,6 +1,6 @@
 # Factory-Production-Line-Multiprocessing-Tracking-System
 
-- App Link - 
+- App Link - https://factory-appuction-line-multiprocessing-tracking-system.streamlit.app/
 
 ## Overview
 This **Factory-Production-Line-Multiprocessing-Tracking-System** is a robust solution for real-time tracking and monitoring of **parcel boxes** and **cement bags** on a factory production line using **computer vision** and **object tracking**. The system is built on a **Yolo11m** model for **object detection** and the **Bot-SORT Algorithm** for **tracking**, combined with **SQLite** or **Turso (cloud-hosted SQLitw)** for data storage. The system supports both **local execution** and **web-based** interface using **Streamlit** for real-time video processing and data visualisation.
