@@ -41,7 +41,7 @@ def display_database_page(table_name, title, use_turso_db=False):
         
         download_csv = df.to_csv(index=False)
         st.download_button(
-            label=f"Download {title} As CSV.",
+            label=f"Download As CSV.",
             data=download_csv,
             file_name=f"{table_name}_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv")
