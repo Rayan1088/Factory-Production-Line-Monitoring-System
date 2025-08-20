@@ -49,7 +49,7 @@ def display_database_page(table_name, title, use_turso_db=False):
         st.info(f"No Data Found In [{table_name}] Table.") 
 
 def main_app(use_turso_db, streamlit):
-    st.title("Factory Production Line Multiprocessing Tracking-System")
+    st.title("Factory Production Line Multiprocessing Tracking System")
 
     st.sidebar.markdown("<div style='font-size:34px; font-weight:bold; color:red;'>Select A Page</div>", unsafe_allow_html=True)
     page = st.sidebar.selectbox(label="Select A Page", options=["Video Processing","Database Records"], label_visibility="collapsed")
