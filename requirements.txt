@@ -1,5 +1,5 @@
 ultralytics==8.3.179    # Streamlit cloud app deploy support
-lap==0.5.12             
+lap==0.5.12             # Linear assignment for tracking (Streamlit cloud app)
 pandas
 numpy<2                 # Streamlit cloud app deploy support
 libsql-client
