@@ -1,5 +1,7 @@
 # Factory-Production-Line-Multiprocessing-Tracking-System
 
+- App Link - 
+
 ## Overview
 This **Factory-Production-Line-Multiprocessing-Tracking-System** is a robust solution for real-time tracking and monitoring of **parcel boxes** and **cement bags** on a factory production line using **computer vision** and **object tracking**. The system is built on a **Yolo11m** model for **object detection** and the **Bot-SORT Algorithm** for **tracking**, combined with **SQLite** or **Turso (cloud-hosted SQLitw)** for data storage. The system supports both **local execution** and **web-based** interface using **Streamlit** for real-time video processing and data visualisation.
 
@@ -200,7 +202,7 @@ Contributions are welcome! Please follow these steps:
 This project is licensed under the MIT License. See the `LICENSE` file for details. 
 
 ## Contact 
-For questions or support, please open an issue on GitHub or contact [mmrayan27@gmail.com].
+For questions or support, please open an issue on GitHub or contact [mrrayan27@gmail.com].
 
 
 
