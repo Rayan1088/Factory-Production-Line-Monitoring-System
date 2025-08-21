@@ -143,39 +143,59 @@ streamlit run app.py
 
 ## Database Schema
 The database contains two tables:
-- **tracking_box_counts (TrackerClass1)**: 
-    - `id`: Auto-incremented primary key
-    - `total_box_in`: Counts of boxes entering
-    - `total_box_out`: Counts of boxes exiting
-    - `date_time`: Timestamp of records
-- **tracking_cement_bag_counts (TrackerClass2)**: 
-    - `id`: Auto-incremented primary key
-    - `total_cement_bag_out`: Counts of cement bags exiting
-    - `date_time`: Timestamp of records
+- **tracking_box_counts (TrackerClass1)**:
+
+    - `id`: Auto-incremented primary key
+    
+    - `total_box_in`: Counts of boxes entering
+    
+    - `total_box_out`: Counts of boxes exiting
+    
+    - `date_time`: Timestamp of records
+- **tracking_cement_bag_counts (TrackerClass2)**:
+    
+    - `id`: Auto-incremented primary key
+    
+    - `total_cement_bag_out`: Counts of cement bags exiting
+    
+    - `date_time`: Timestamp of records
 
 ## Configuration
 The `config.yaml` file allows customisation of the following key parameters,
 - **Model And Video**:
-    - `MODEL_PATH`: Path to the YOLO custom train model.
-    - `VIDEO_SOURCE_1`: Video file path or camera index for TrackerClass1. 
-    - `VIDEO_SOURCE_2`: Video file path or camera index for TrackerClass1. 
+
+    - `MODEL_PATH`: Path to the YOLO custom train model.
+    
+    - `VIDEO_SOURCE_1`: Video file path or camera index for TrackerClass1. 
+    
+    - `VIDEO_SOURCE_2`: Video file path or camera index for TrackerClass1. 
 - **Database**:    
     - `LOCAL_DB_PATH`: Path to the local SQLite database file.
     - `TURSO_DB_URL`: URL for Turso database.
     - `TURSO_DB_TOKEN`: Authentication token for Turso.
     - `DATABASE_SAVE_TIME_INTERVAL`: Interval value for auto-save counts.
 - **Tracking**:
-    - `HORIZONTAL_LINE_1_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
-    - `HORIZONTAL_LINE_2_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
-    - `HORIZONTAL_LINE_3_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
-    - `COUNTING_LINE_1_FOR_TRACKER_2`: Is the coordinates value for the counting line (TrackerClass2).
-    - `SKIP_FRAMES_FOR_TRACKER_1`: Number of frames to skip for performance (TrackerClass1).
-    - `SKIP_FRAMES_FOR_TRACKER_2`: Number of frames to skip for performance (TrackerClass2).
-    - `MAX_FRAMES_MISSING`: Maximum frames an object can be missing before **track cleanup** for that particular object.
-    - `MAX_DICTIONARY_SIZE`: **Maximum number of tracked objects** to prevent memory overload.
+
+    - `HORIZONTAL_LINE_1_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
+    
+    - `HORIZONTAL_LINE_2_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
+    
+    - `HORIZONTAL_LINE_3_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
+    
+    - `COUNTING_LINE_1_FOR_TRACKER_2`: Is the coordinates value for the counting line (TrackerClass2).
+    
+    - `SKIP_FRAMES_FOR_TRACKER_1`: Number of frames to skip for performance (TrackerClass1).
+    
+    - `SKIP_FRAMES_FOR_TRACKER_2`: Number of frames to skip for performance (TrackerClass2).
+    
+    - `MAX_FRAMES_MISSING`: Maximum frames an object can be missing before **track cleanup** for that particular object.
+    
+    - `MAX_DICTIONARY_SIZE`: **Maximum number of tracked objects** to prevent memory overload.
 - **Visualization**:
-    - `FRAME_WIDTH`, `FRAME_HEIGHT`: Dimensions for resizing video frames.
-    - `BBOX_THICKNESS`, `CENTER_POINT_RADIUS`, `TRAJECTORY_THICKNESS`, `FONT_SIZE`, `FONT_THICKNESS`, `TEXT_LABEL`, `TEXT_POSITION`: Those parameters for bounding boxes, text, and trajectories visualisation settings.
+
+    - `FRAME_WIDTH`, `FRAME_HEIGHT`: Dimensions for resizing video frames.
+    
+    - `BBOX_THICKNESS`, `CENTER_POINT_RADIUS`, `TRAJECTORY_THICKNESS`, `FONT_SIZE`, `FONT_THICKNESS`, `TEXT_LABEL`, `TEXT_POSITION`: Those parameters for bounding boxes, text, and trajectories visualisation settings.
 
 ## Technical Details
 ### Object Detection and Tracking
@@ -192,10 +212,14 @@ The `config.yaml` file allows customisation of the following key parameters,
 
 ### Logging 
 - Custom logging (`src.logger`) records: 
-    - Initialisation of trackers, database, and multiprocessing.
-    - Frame-by-frame tracking events (detections, counts, trajectory updates).
-    - Database operations (connections, save, errors).
-    - Multiprocessing events (process start, termination, errors).
+
+    - Initialisation of trackers, database, and multiprocessing.
+    
+    - Frame-by-frame tracking events (detections, counts, trajectory updates).
+    
+    - Database operations (connections, save, errors).
+    
+    - Multiprocessing events (process start, termination, errors).
 - Logs are written to files and the console, aiding debugging and monitoring.
 
 ### Error Handling
