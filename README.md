@@ -66,8 +66,7 @@ Both trackers process video feeds, detect objects, track their movement, and sto
 ## Requirements
 - **Python 3.11**
 - **Dependencies (listed in `requirements.txt`)**:
-    - `ultralytics==8.3.179` # Streamlit cloud app deploy support
-    - `lap==0.5.12`             
+    - `ultralytics==8.3.179` # Streamlit cloud app deploy support                                                                                                                                  - `lap==0.5.12`             
     - `pandas`
     - `numpy<2` # Streamlit cloud app deploy support
     - `libsql-client`
