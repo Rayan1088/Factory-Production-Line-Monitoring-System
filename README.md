@@ -66,13 +66,22 @@ Both trackers process video feeds, detect objects, track their movement, and sto
 ## Requirements
 - **Python 3.11**
 - **Dependencies (listed in `requirements.txt`)**:
-    - `ultralytics==8.3.179` # Streamlit cloud app deploy support                                                                                                                                  - `lap==0.5.12`             
-    - `pandas`
-    - `numpy<2` # Streamlit cloud app deploy support
-    - `libsql-client`
-    - `streamlit`
-    - `opencv-python-headless` # if you don’t need GUI, then use headless of the - - `opencv-python` 
-    - `pyyaml`
+    - `ultralytics==8.3.179` # Streamlit cloud app deploy support
+
+    - `lap==0.5.12`             
+    
+    - `pandas`
+    
+    - `numpy<2` # Streamlit cloud app deploy support
+    
+    - `libsql-client`
+    
+    - `streamlit`
+    
+    - `opencv-python-headless` # if you don’t need GUI, then use headless of the - - `opencv-python` 
+    
+    - `pyyaml`
+
 - **YOLO Model**: A trained YOLOv11m model file (specified in `config.yaml`)
 - **Video Sources**:Video files or camera feeds for processing
 - **Turso Database**: Turso database URL and token for cloud-hosted SQLite (specified in `config.yaml`)
