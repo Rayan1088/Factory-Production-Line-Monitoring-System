@@ -66,7 +66,8 @@ Both trackers process video feeds, detect objects, track their movement, and sto
 ## Requirements
 - **Python 3.11**
 - **Dependencies (listed in `requirements.txt`)**:
-    - `ultralytics==8.3.179` # Streamlit cloud app deploy support
+
+    - `ultralytics==8.3.179` # Streamlit cloud app deploy support
 
     - `lap==0.5.12`             
     
@@ -96,7 +97,8 @@ Both trackers process video feeds, detect objects, track their movement, and sto
  pip install -r requirements.txt
  ```
 3. Configure `config.yaml` file:
-    - Specify paths for the YOLO model (`MODEL_PATH`), video sources (`VIDEO_SOURCES_1`, `VIDEO_SOURCES_2`), and database (`LOCAL_DATABASE_PATH`) 
+    
+    - Specify paths for the YOLO model (`MODEL_PATH`), video sources (`VIDEO_SOURCES_1`, `VIDEO_SOURCES_2`), and database (`LOCAL_DATABASE_PATH`) 
 
     - Provide `TURSO_DB_URL` and `TURSO_DB_TOKEN` for cloud database usage.
    
