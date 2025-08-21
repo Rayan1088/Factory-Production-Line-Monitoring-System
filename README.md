@@ -78,7 +78,7 @@ Both trackers process video feeds, detect objects, track their movement, and sto
     
     - `streamlit`
     
-    - `opencv-python-headless` # if you don’t need GUI, then use headless of the - - `opencv-python` 
+    - `opencv-python-headless` # if you don’t need GUI, then use headless of the `opencv-python` 
     
     - `pyyaml`
 
@@ -97,8 +97,10 @@ Both trackers process video feeds, detect objects, track their movement, and sto
  ```
 3. Configure `config.yaml` file:
     - Specify paths for the YOLO model (`MODEL_PATH`), video sources (`VIDEO_SOURCES_1`, `VIDEO_SOURCES_2`), and database (`LOCAL_DATABASE_PATH`) 
-    - Provide `TURSO_DB_URL` and `TURSO_DB_TOKEN` for cloud database usage.
-    - Adjust tracking parameters (like counting line coordinates, frame skipping, and visualisation settings).
+
+    - Provide `TURSO_DB_URL` and `TURSO_DB_TOKEN` for cloud database usage.
+   
+    - Adjust tracking parameters (like counting line coordinates, frame skipping, and visualisation settings).
 
 ## Usage
 ### Local Execution
