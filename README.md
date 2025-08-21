@@ -170,10 +170,14 @@ The `config.yaml` file allows customisation of the following key parameters,
     
     - `VIDEO_SOURCE_2`: Video file path or camera index for TrackerClass1. 
 - **Database**:    
-    - `LOCAL_DB_PATH`: Path to the local SQLite database file.
-    - `TURSO_DB_URL`: URL for Turso database.
-    - `TURSO_DB_TOKEN`: Authentication token for Turso.
-    - `DATABASE_SAVE_TIME_INTERVAL`: Interval value for auto-save counts.
+
+    - `LOCAL_DB_PATH`: Path to the local SQLite database file.
+    
+    - `TURSO_DB_URL`: URL for Turso database.
+    
+    - `TURSO_DB_TOKEN`: Authentication token for Turso.
+    
+    - `DATABASE_SAVE_TIME_INTERVAL`: Interval value for auto-save counts.
 - **Tracking**:
 
     - `HORIZONTAL_LINE_1_FOR_TRACKER_1`: Is the coordinates value for the counting line (TrackerClass1).
