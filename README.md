@@ -130,8 +130,10 @@ streamlit run app.py
 ```
 - Access the app at `http://localhost:8501`
 - **Pages**:
-    - **Video Processing**: Shows real-time video feeds for both trackers, with bounding boxes, trajectories, counting lines and live counts.
-    - **Database Records** Displays stored counts in (Local SQLite or Turso) database tables for both trackers, with options to filter by date and download as CSV.
+
+    - **Video Processing**: Shows real-time video feeds for both trackers, with bounding boxes, trajectories, counting lines and live counts.
+    
+    - **Database Records** Displays stored counts in (Local SQLite or Turso) database tables for both trackers, with options to filter by date and download as CSV.
 - The app supports interactive controls for monitoring and database operations.
 
 ### Database Support
