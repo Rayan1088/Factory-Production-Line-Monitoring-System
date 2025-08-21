@@ -113,10 +113,14 @@ python main.py
 - This starts two processes (`TrackerClass1` and `TrackerClass2`) to track boxes and cement bags in parallel.
 - Displays video feeds with bounding boxes, trajectories and counts using OpenCV windows.
 - **Use keyboard controls**:
-    - `ESC`: Exit processing
-    - `SPACE`: Pause/resume
-    - `S`: Save counts to database
-    - `R`: Reset counts
+
+    - `ESC`: Exit processing
+    
+    - `SPACE`: Pause/resume
+    
+    - `S`: Save counts to database
+    
+    - `R`: Reset counts
 - Results are stored in a configured database (SQLite or Turso) and can also be viewed at the end of execution using the `view_database_records` function.
 
 ### Streamlit App
